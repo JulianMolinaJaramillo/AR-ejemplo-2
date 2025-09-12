@@ -1,16 +1,25 @@
-﻿using TMPro;
+﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class ManagerControlador : MonoBehaviour
 {
+    [Header("Configuraciónes para Zappar Visible e invisible")]
     public GameObject imagenPreview;
     public GameObject padre;
-    public GameObject panelDespedida;
+    public GameObject panelImgTextoInicial;
     public TextMeshProUGUI txtTituloInicial;
+
+    [Header("Configuraciónes evento lluvia")]
+    public CrecimientoNubes crecimientoNubes;
     public ParticleSystem particulas;
 
-    [HideInInspector]
-    public bool lluviaActiva;
+    [Header("Configuraciónes adicionales")]
+    public GameObject panelDespedida;
+
+    private bool lluviaActiva;
+    private Coroutine coroutine;
+
     public static ManagerControlador singleton;
 
     private void Awake()
@@ -35,6 +44,7 @@ public class ManagerControlador : MonoBehaviour
 
         imagenPreview.SetActive(true);
         padre.SetActive(true);
+        panelImgTextoInicial.SetActive(false);
         txtTituloInicial.text = "";
     }
 
@@ -47,6 +57,7 @@ public class ManagerControlador : MonoBehaviour
 
         imagenPreview.SetActive(false);
         padre.SetActive(false);
+        panelImgTextoInicial.SetActive(true);
         txtTituloInicial.text = "Vuelve a enfocar la imagen";
     }
 
@@ -57,4 +68,34 @@ public class ManagerControlador : MonoBehaviour
         Application.Quit();
     }
 
+    [ContextMenu("Iniciar")]
+    public void EmpezarEventoLluviaCreciente()
+    {
+        // Empezamos el evento
+        if (coroutine != null) StopCoroutine(coroutine);
+        coroutine = StartCoroutine(LluviaCreciente());
+    }
+
+    private IEnumerator LluviaCreciente()
+    {
+        // Generamos las nubes
+        crecimientoNubes.ActivarCrecimiento();
+
+        yield return new WaitForSeconds(1f);
+
+        // Activamos sonido lluvia
+        if (SimpleAudioManager.singleton != null)
+        {
+            SimpleAudioManager.singleton.DetenerAudioFondo();
+            SimpleAudioManager.singleton.audioSourceFondo.clip = SimpleAudioManager.singleton.clips[2];
+            SimpleAudioManager.singleton.RestaurarAudioFondo();
+        }
+
+        // Activamos la lluvia
+        lluviaActiva = true;
+        if (particulas != null) particulas.Play();
+
+        yield return new WaitForSeconds(1f);
+
+    }
 }

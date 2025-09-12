@@ -42,14 +42,6 @@ public class SimpleAudioManager : MonoBehaviour
         audioSource.Stop();
     }
 
-    public void ReproducirLluvia()
-    {
-        ManagerControlador.singleton.lluviaActiva = true;
-        audioSourceFondo.Stop();
-        audioSourceFondo.clip = clips[2];
-        audioSourceFondo.Play();
-    }
-
     public void DetenerAudioFondo()
     {
         audioSourceFondo.Stop();
