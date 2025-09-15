@@ -13,6 +13,10 @@ public class ManagerControlador : MonoBehaviour
     [Header("Configuraciónes evento lluvia")]
     public CrecimientoNubes crecimientoNubes;
     public ParticleSystem particulas;
+    public PulsoEscala[] pulsoEscala;
+    public Temblor[] temblorTerrenos;
+    public Temblor[] temblorCasas;
+    public MovimientoNPC[] npcs;
 
     [Header("Configuraciónes adicionales")]
     public GameObject panelDespedida;
@@ -81,7 +85,9 @@ public class ManagerControlador : MonoBehaviour
         // Generamos las nubes
         crecimientoNubes.ActivarCrecimiento();
 
+
         yield return new WaitForSeconds(1f);
+
 
         // Activamos sonido lluvia
         if (SimpleAudioManager.singleton != null)
@@ -96,6 +102,37 @@ public class ManagerControlador : MonoBehaviour
         if (particulas != null) particulas.Play();
 
         yield return new WaitForSeconds(1f);
+
+
+        for (int i = 0; i < pulsoEscala.Length; i++)
+        {
+            pulsoEscala[i].IniciarAlerta();
+        }
+
+
+        yield return new WaitForSeconds(1f);
+
+
+        for (int i = 0; i < temblorTerrenos.Length; i++)
+        {
+            temblorTerrenos[i].IniciarVibracion(0.001f);
+        }
+
+        yield return new WaitForSeconds(1f);
+
+
+        for (int i = 0; i < temblorCasas.Length; i++)
+        {
+            temblorCasas[i].IniciarVibracion(0.001f);
+        }
+
+        yield return new WaitForSeconds(1f);
+
+
+        for (int i = 0; i < npcs.Length; i++)
+        {
+            npcs[i].CorrerPorSuVida();
+        }
 
     }
 }
