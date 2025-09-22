@@ -9,6 +9,8 @@ public class SimpleAudioManager : MonoBehaviour
 
     public AudioSource audioSource;
     public AudioSource audioSourceFondo;
+    public AudioSource audioSourceGritos;
+    public AudioSource audioSourceAlarma;
 
     private void Awake()
     {
@@ -45,10 +47,34 @@ public class SimpleAudioManager : MonoBehaviour
     public void DetenerAudioFondo()
     {
         audioSourceFondo.Stop();
+        audioSourceGritos.volume = 0f;
+        audioSourceAlarma.volume = 0f;
     }
 
     public void RestaurarAudioFondo()
     {
         audioSourceFondo.Play();
+        audioSourceGritos.volume = 1f;
+        audioSourceAlarma.volume = 1f;
+    }
+
+    public void Alarma()
+    {
+        audioSourceAlarma.Play();
+    }
+
+    public void DesactivarAlarma()
+    {
+        audioSourceAlarma.Stop();
+    }
+    [ContextMenu("gritar")]
+    public void Gritos()
+    {
+        audioSourceGritos.Play();
+    }
+    [ContextMenu("callar")]
+    public void DesactivarGritos()
+    {
+        audioSourceGritos.Stop();
     }
 }

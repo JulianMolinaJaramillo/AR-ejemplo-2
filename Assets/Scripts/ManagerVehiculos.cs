@@ -11,6 +11,7 @@ public class ManagerVehiculos : MonoBehaviour
     public float tiempoSpawn;
     
     private Coroutine coroutine;
+    private bool detener;
 
     private void Start()
     {
@@ -19,31 +20,34 @@ public class ManagerVehiculos : MonoBehaviour
 
     public void SpawnVehiculo()
     {
-        int numeroX = Random.Range(0, 5);
-
-        // Instanciar un vehiculo aleatorio
-        GameObject vehiculoInstanciado = Instantiate(vehiculos[numeroX], transform);
-
-        MovimientoCarril movimientoCarril = vehiculoInstanciado.GetComponent<MovimientoCarril>();
-
-        if (movimientoCarril.soyBus)
+        if (!detener)
         {
-            movimientoCarril.AsignarDestinos(posicionesBus);
-        }
-        else if (movimientoCarril.soyCarro)
-        {
-            movimientoCarril.AsignarDestinos(posicionesCarros);
-        }
-        else
-        {
-            movimientoCarril.AsignarDestinos(posicionesTaxis);
-        }
+            int numeroX = Random.Range(0, 5);
 
-        int tiempoRespawnAleatorio = Random.Range(2,5);
-        tiempoSpawn = Mathf.RoundToInt(tiempoRespawnAleatorio);
+            // Instanciar un vehiculo aleatorio
+            GameObject vehiculoInstanciado = Instantiate(vehiculos[numeroX], transform);
 
-        if (coroutine != null) StopCoroutine(coroutine);
-        coroutine = StartCoroutine(Respawn());
+            MovimientoCarril movimientoCarril = vehiculoInstanciado.GetComponent<MovimientoCarril>();
+
+            if (movimientoCarril.soyBus)
+            {
+                movimientoCarril.AsignarDestinos(posicionesBus);
+            }
+            else if (movimientoCarril.soyCarro)
+            {
+                movimientoCarril.AsignarDestinos(posicionesCarros);
+            }
+            else
+            {
+                movimientoCarril.AsignarDestinos(posicionesTaxis);
+            }
+
+            int tiempoRespawnAleatorio = Random.Range(2, 5);
+            tiempoSpawn = Mathf.RoundToInt(tiempoRespawnAleatorio);
+
+            if (coroutine != null) StopCoroutine(coroutine);
+            coroutine = StartCoroutine(Respawn());
+        }    
     }
 
     private IEnumerator Respawn()
@@ -52,9 +56,18 @@ public class ManagerVehiculos : MonoBehaviour
         SpawnVehiculo();
     }
 
+    [ContextMenu("detener")]
+    public void DetenerSpawn()
+    {
+        detener = true;
+    }
+
     private void OnEnable()
     {
-        if (coroutine != null) StopCoroutine(coroutine);
-        coroutine = StartCoroutine(Respawn());
+        if (!detener)
+        {
+            if (coroutine != null) StopCoroutine(coroutine);
+            coroutine = StartCoroutine(Respawn());
+        }     
     }
 }

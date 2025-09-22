@@ -71,11 +71,8 @@ public class MovimientoNPC : MonoBehaviour
         tiempoEspera = 0.01f;
         velocidad = 0.2f;
 
-        if (!this.gameObject.activeSelf)
-        {
-            if (coroutine != null) StopCoroutine(coroutine);
-            coroutine = StartCoroutine(EsperarYContinuar());
-        }     
+        if (coroutine != null) StopCoroutine(coroutine);
+        coroutine = StartCoroutine(EsperarYContinuar());    
     }
 
     IEnumerator EsperarYContinuar()
@@ -109,7 +106,6 @@ public class MovimientoNPC : MonoBehaviour
         {
             if (coroutine != null) StopCoroutine(coroutine);
             coroutine = StartCoroutine(EsperarYContinuar());
-        }
-        
+        }       
     }
 }
