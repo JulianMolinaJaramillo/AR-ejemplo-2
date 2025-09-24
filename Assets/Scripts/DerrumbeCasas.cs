@@ -51,7 +51,11 @@ public class DerrumbeCasas : MonoBehaviour
             {
                 // Opciones: detenerse o reiniciar recorrido
                 // Detenerse:
-                vibracion.Vibrar();
+                if (vibracion != null)
+                {
+                    vibracion.Vibrar();
+                }
+                
                 enabled = false;
 
                 // O reiniciar ciclo:
@@ -64,5 +68,12 @@ public class DerrumbeCasas : MonoBehaviour
     public void IniciarDerrumbe()
     {
         activarDerrumbe = true;
+    }
+
+    [ContextMenu("reiniciar")]
+    public void ReiniciarDerrumbe()
+    {
+        indiceActual = 0;
+        enabled = true;
     }
 }

@@ -17,37 +17,22 @@ public class Enfocar : MonoBehaviour
             if (btnCuenca)
             {
                 ManagerControlador.singleton.DesastreCuenca();
+                ManagerControlador.singleton.ActivarImagenCuenca();
 
-                if (ManagerControlador.singleton.desastreInicialActivo)
-                {
-                    Debug.Log("g0");
-                    ManagerControlador.singleton.pulsosInternos[0].IniciarAlerta();
-                    ManagerControlador.singleton.AumentarRioCuenca();
-                }
-
-                if (ManagerControlador.singleton.desastreSecundarioActivo)
+                if (ManagerControlador.singleton.desastreSecundarioActivo && !ManagerControlador.singleton.puntoEncuentroActivo)
                 {
                     SimpleAudioManager.singleton.Gritos();
-                    ManagerControlador.singleton.AumentarMasRioCuenca();
                 }
             }
             else if (btnCasas)
             {
                 ManagerControlador.singleton.DesastreCasas();
-
-                if (ManagerControlador.singleton.desastreInicialActivo)
-                {
-                    Debug.Log("g0");
-                    ManagerControlador.singleton.pulsosInternos[1].IniciarAlerta();
-                    ManagerControlador.singleton.camaraAlerta.IniciarAlerta();
-                    ManagerControlador.singleton.AumentarRioCasas();
-                }
+                ManagerControlador.singleton.ActivarImagenCasas();
 
                 if (ManagerControlador.singleton.desastreSecundarioActivo)
                 {
                     SimpleAudioManager.singleton.Gritos();
                     SimpleAudioManager.singleton.Alarma();
-                    ManagerControlador.singleton.AumentarMasRioCasas();
                 }
             }
 
@@ -57,6 +42,8 @@ public class Enfocar : MonoBehaviour
         {
             if (btnCuencaInterno)
             {
+                ManagerControlador.singleton.ActivarImagenIguana();
+
                 if (ManagerControlador.singleton.desastreSecundarioActivo)
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
@@ -64,6 +51,8 @@ public class Enfocar : MonoBehaviour
             }
             else if (btnCasasInterno)
             {
+                ManagerControlador.singleton.ActivarImagenIguana();
+
                 if (ManagerControlador.singleton.desastreSecundarioActivo)
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
@@ -72,7 +61,7 @@ public class Enfocar : MonoBehaviour
             }
 
             aumentarEscala.Escalar();
-        }  
+        }
     }
 
     [ContextMenu("avticar")]
@@ -84,37 +73,22 @@ public class Enfocar : MonoBehaviour
             if (btnCuenca)
             {
                 ManagerControlador.singleton.DesastreCuenca();
-
-                if (ManagerControlador.singleton.desastreInicialActivo)
-                {
-                    Debug.Log("g0");
-                    ManagerControlador.singleton.pulsosInternos[0].IniciarAlerta();
-                    ManagerControlador.singleton.AumentarRioCuenca();
-                }
-
+                ManagerControlador.singleton.ActivarImagenCuenca();
+                
                 if (ManagerControlador.singleton.desastreSecundarioActivo && !ManagerControlador.singleton.puntoEncuentroActivo)
                 {
                     SimpleAudioManager.singleton.Gritos();
-                    ManagerControlador.singleton.AumentarMasRioCuenca();
                 }
             }
             else if (btnCasas)
             {
                 ManagerControlador.singleton.DesastreCasas();
-
-                if (ManagerControlador.singleton.desastreInicialActivo)
-                {
-                    Debug.Log("g0");
-                    ManagerControlador.singleton.pulsosInternos[1].IniciarAlerta();
-                    ManagerControlador.singleton.camaraAlerta.IniciarAlerta();
-                    ManagerControlador.singleton.AumentarRioCasas();
-                }
+                ManagerControlador.singleton.ActivarImagenCasas();
 
                 if (ManagerControlador.singleton.desastreSecundarioActivo)
                 {
                     SimpleAudioManager.singleton.Gritos();
                     SimpleAudioManager.singleton.Alarma();
-                    ManagerControlador.singleton.AumentarMasRioCasas();
                 }
             }
 
@@ -124,6 +98,8 @@ public class Enfocar : MonoBehaviour
         {
             if (btnCuencaInterno)
             {
+                ManagerControlador.singleton.ActivarImagenIguana();
+
                 if (ManagerControlador.singleton.desastreSecundarioActivo)
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
@@ -131,6 +107,8 @@ public class Enfocar : MonoBehaviour
             }
             else if (btnCasasInterno)
             {
+                ManagerControlador.singleton.ActivarImagenIguana();
+
                 if (ManagerControlador.singleton.desastreSecundarioActivo)
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();

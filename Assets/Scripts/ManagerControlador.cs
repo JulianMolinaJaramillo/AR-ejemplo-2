@@ -5,7 +5,6 @@ using UnityEngine;
 public class ManagerControlador : MonoBehaviour
 {
     [Header("Configuraciónes para Zappar Visible e invisible")]
-    public GameObject imagenPreview;
     public GameObject padre;
     public GameObject panelImgTextoInicial;
     public TextMeshProUGUI txtTituloInicial;
@@ -31,7 +30,7 @@ public class ManagerControlador : MonoBehaviour
     public DerrumbeCasas[] temblorCasas;
     public GameObject[] casasDesarmadas;
     public NivelAgua rioCuenca; // arrastras el objeto con el material al inspector
-    public MovimientoSuavizado movimientoSuavizadoCuenca;
+    public Roca[] rocas;
 
     [Header("Configuraciónes Casas")]
     public GameObject casas;
@@ -47,12 +46,17 @@ public class ManagerControlador : MonoBehaviour
 
     [Header("Configuraciónes adicionales")]
     public GameObject imgLLuvia;
+    public GameObject botonLluviaCreciente;
+    public GameObject botonReunion;
     public ManagerVehiculos[] vehiculos;
     public GameObject panelDespedida;
     public PulsoEscala[] pulsosInternos;
     public TextoEscalonado canvasInformativo;
     public TextoEscalonado canvasInformativoCuencaInterno;
     public TextoEscalonado canvasInformativoCasasInterno;
+    public GameObject imagenIguana;
+    public GameObject imagenCuenca;
+    public GameObject imagenCasas;
 
     private bool lluviaActiva;
     private Coroutine coroutine;
@@ -72,7 +76,23 @@ public class ManagerControlador : MonoBehaviour
     public bool puntoEncuentroActivo;
 
     public static ManagerControlador singleton;
+    private bool imagenIguanaActiva;
+    private bool imagenCuencaActiva;
+    private bool imagenCasasActiva;
+
+    private bool momentoUnoCuencaActivo;
+    private bool momentoUnoCasasActivo;
+
+    private bool momentoUnoCuencaTerminado;
+    private bool momentoUnoCasasTerminado;
+
+    [HideInInspector]
+    public bool momentoDosCuencaTerminado;
+    [HideInInspector]
+    public bool momentoDosCasasTerminado;
+
     private bool activacion;
+
     private void Awake()
     {
         // Si ya existe una instancia y no es esta → destruir el duplicado
@@ -107,7 +127,21 @@ public class ManagerControlador : MonoBehaviour
             casas.SetActive(false);
             cuenca.SetActive(false);
             activacion = true;
-        }    
+        }
+
+        if (momentoUnoCasasTerminado && momentoUnoCuencaTerminado)
+        {
+            botonLluviaCreciente.SetActive(true);
+            momentoUnoCasasTerminado = false;
+            momentoUnoCuencaTerminado = false;
+        }
+
+        if (momentoDosCasasTerminado && momentoDosCuencaTerminado)
+        {
+            botonReunion.SetActive(true);
+            momentoDosCasasTerminado = false;
+            momentoDosCuencaTerminado = false;
+        }
     }
 
     /// <summary>
@@ -121,7 +155,20 @@ public class ManagerControlador : MonoBehaviour
             particulasNubes.gameObject.SetActive(true);
         }
 
-        imagenPreview.SetActive(true);
+        if (imagenIguanaActiva)
+        {
+            imagenIguana.SetActive(true);
+        }
+        else if (imagenCuencaActiva)
+        {
+            imagenCuenca.SetActive(true);
+        }
+        else if (imagenCasasActiva)
+        {
+            imagenCasas.SetActive(true);
+        }
+        
+        
         imgLLuvia.SetActive(true);
         padre.SetActive(true);
         panelImgTextoInicial.SetActive(false);
@@ -150,7 +197,19 @@ public class ManagerControlador : MonoBehaviour
             particulasNubes.gameObject.SetActive(false);
         }
 
-        imagenPreview.SetActive(false);
+        if (imagenIguanaActiva)
+        {
+            imagenIguana.SetActive(false);
+        }
+        else if (imagenCuencaActiva)
+        {
+            imagenCuenca.SetActive(false);
+        }
+        else if (imagenCasasActiva)
+        {
+            imagenCasas.SetActive(false);
+        }
+
         imgLLuvia.SetActive(false);
         padre.SetActive(false);
         panelImgTextoInicial.SetActive(true);
@@ -164,6 +223,38 @@ public class ManagerControlador : MonoBehaviour
         Application.Quit();
     }
 
+    public void ActivarImagenIguana()
+    {
+        imagenIguanaActiva = true;
+        imagenCuencaActiva = false;
+        imagenCasasActiva = false;
+
+        imagenIguana.SetActive(true);
+        imagenCasas.SetActive(false);
+        imagenCuenca.SetActive(false);
+    }
+
+    public void ActivarImagenCuenca()
+    {
+        imagenIguanaActiva = false;
+        imagenCuencaActiva = true;
+        imagenCasasActiva = false;
+
+        imagenIguana.SetActive(false);
+        imagenCasas.SetActive(false);
+        imagenCuenca.SetActive(true);
+    }
+
+    public void ActivarImagenCasas()
+    {
+        imagenIguanaActiva = false;
+        imagenCuencaActiva = false;
+        imagenCasasActiva = true;
+
+        imagenIguana.SetActive(false);
+        imagenCasas.SetActive(true);
+        imagenCuenca.SetActive(false);
+    }
 
     public void ActivarPanelCasas()
     {
@@ -197,6 +288,11 @@ public class ManagerControlador : MonoBehaviour
 
     private IEnumerator LluviaCreciente()
     {
+        for (int i = 0; i < pulsosInternos.Length; i++)
+        {
+            pulsosInternos[i].gameObject.SetActive(false);
+        }
+
         canvasInformativo.textoAlmacenado = "2. Precipitación de lluvia.";
         canvasInformativo.MostrarTexto("2. Precipitación de lluvia.");
 
@@ -220,6 +316,15 @@ public class ManagerControlador : MonoBehaviour
         // Activamos la lluvia
         if (particulas != null) particulas.gameObject.SetActive(true);
 
+        if (rio.gameObject.activeInHierarchy)
+        {
+            rio.SubirDisplace();
+        }
+        else
+        {
+            rio.rioActivo = true;
+        }
+        
         yield return new WaitForSeconds(1f);
         
         DesactivarPanelCasas();
@@ -231,27 +336,39 @@ public class ManagerControlador : MonoBehaviour
         txtPanelCuenca.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
         txtPanelCuenca.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
 
-        canvasInformativoCuencaInterno.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
-        canvasInformativoCuencaInterno.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
+        canvasInformativoCuencaInterno.textoAlmacenado = "El agua golpea las laderas con pendientes fuertes, lo que acelera los procesos de escorrentía superficial.";
+        canvasInformativoCuencaInterno.MostrarTexto("El agua golpea las laderas con pendientes fuertes, lo que acelera los procesos de escorrentía superficial.");
 
-        pulsosInternos[0].IniciarAlerta();
-        movimientoSuavizadoCuenca.IniciarDesplazamiento();
-        rio.SubirDisplace();
-        
-        yield return new WaitForSeconds(12f);
+        yield return new WaitForSeconds(0.5f);
 
         pulsoEscalaCasas.IniciarAlerta();
         ActivarPanelCasas();  
         txtPanelCasas.textoAlmacenado = "A la zona residencial empiezan a llegar las nubes cargadas de lluvia; crece peligrosamente el nivel del agua.";
         txtPanelCasas.MostrarTexto("A la zona residencial empiezan a llegar las nubes cargadas de lluvia; crece peligrosamente el nivel del agua.");
 
-        canvasInformativoCasasInterno.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
-        canvasInformativoCasasInterno.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
+        canvasInformativoCasasInterno.textoAlmacenado = "los habitantes se percatan de que el nivel del caudal se incrementa y el sensor del nivel de agua se activa.";
+        canvasInformativoCasasInterno.MostrarTexto("los habitantes se percatan de que el nivel del caudal se incrementa y el sensor del nivel de agua se activa.");
 
 
-        pulsosInternos[1].IniciarAlerta();
-        movimientoSuavizadoCasas.IniciarDesplazamiento();
-        camaraAlerta.IniciarAlerta();
+        if (cuenca.activeInHierarchy)
+        {
+            momentoUnoCuencaActivo = true;
+            DesastreCuenca();
+        }
+        else
+        {
+            momentoUnoCuencaActivo = true;
+        }
+
+        if (casas.activeInHierarchy)
+        {
+            momentoUnoCasasActivo = true;
+            DesastreCasas();
+        }
+        else
+        {
+            momentoUnoCasasActivo = true;
+        }
     }
 
     [ContextMenu("Iniciar 2")]
@@ -264,13 +381,17 @@ public class ManagerControlador : MonoBehaviour
 
     private IEnumerator ContinuaLluviaCreciente()
     {
+        for (int i = 0; i < pulsosInternos.Length; i++)
+        {
+            pulsosInternos[i].gameObject.SetActive(false);
+        }
 
         canvasInformativo.textoAlmacenado = "3. Concentración de caudales";
         canvasInformativo.MostrarTexto("3. Concentración de caudales");
 
         desastreSecundarioActivo = true;
-        // Aumentar Particulas lluvia
 
+        // Aumentar Particulas lluvia
         var main = particulas.main;  // Módulo Main
         main.maxParticles = 1000;
 
@@ -286,11 +407,20 @@ public class ManagerControlador : MonoBehaviour
         ActivarPanelCuenca();
         txtPanelCuenca.textoAlmacenado = "Cunde el caos entre las personas, se presentan desprendimientos de tierra, las viviendas colapsan y la quebrada se desborda.";
         txtPanelCuenca.MostrarTexto("Cunde el caos entre las personas, se presentan desprendimientos de tierra, las viviendas colapsan y la quebrada se desborda.");
-        movimientoSuavizadoCuenca.CambiarObjetivoSecundario();
 
-        rio.tope = 0.073f;
-        rio.SubirDisplace();
+        canvasInformativoCuencaInterno.textoAlmacenado = "El suelo se desprende en bloques, arrastrado por la corriente, generando un socavamiento progresivo, y se ve como la columna va quedando expuesta.";
+        canvasInformativoCuencaInterno.MostrarTexto("El suelo se desprende en bloques, arrastrado por la corriente, generando un socavamiento progresivo, y se ve como la columna va quedando expuesta.");
 
+        if (rio.gameObject.activeInHierarchy)
+        {
+            rio.tope = 0.031f;
+            rio.SubirDisplace();
+        }
+        else
+        {
+            rio.rioActivo = true;
+        }
+        
         if (cuenca.activeInHierarchy)
         {
             desastreCuencaActivo = true;
@@ -302,12 +432,14 @@ public class ManagerControlador : MonoBehaviour
             desastreCuencaActivo = true;
         }
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(0.5f);
 
         ActivarPanelCasas();
         txtPanelCasas.textoAlmacenado = "La capacidad de infiltración del suelo se ve superada; las zonas urbanas se inundan y suena la alarma para una pronta evacuación.";
         txtPanelCasas.MostrarTexto("La capacidad de infiltración del suelo se ve superada; las zonas urbanas se inundan y suena la alarma para una pronta evacuación.");
-        movimientoSuavizadoCasas.CambiarObjetivoSecundario();
+
+        canvasInformativoCasasInterno.textoAlmacenado = "El nivel del agua aumenta, se activa una alarma comunitaria de emergencia instalada como parte del sistema de monitoreo y alertas tempranas - SATC.";
+        canvasInformativoCasasInterno.MostrarTexto("El nivel del agua aumenta, se activa una alarma comunitaria de emergencia instalada como parte del sistema de monitoreo y alertas tempranas - SATC.");
 
         if (casas.activeInHierarchy)
         {
@@ -377,6 +509,22 @@ public class ManagerControlador : MonoBehaviour
 
     public void DesastreCuenca()
     {
+        if (coroutine3 != null) StopCoroutine(coroutine3);
+        coroutine3 = StartCoroutine(IniciadorCuenca());
+    }
+
+    private IEnumerator IniciadorCuenca()
+    {
+        yield return new WaitForSeconds(1f);
+
+        if (momentoUnoCuencaActivo)
+        {
+            momentoUnoCuencaActivo = false;
+            // Empezamos el evento
+            if (coroutine3 != null) StopCoroutine(coroutine3);
+            coroutine3 = StartCoroutine(MomentoUnoCuenca());
+        }
+
         if (desastreCuencaActivo)
         {
             desastreCuencaActivo = false;
@@ -384,16 +532,39 @@ public class ManagerControlador : MonoBehaviour
             if (coroutine3 != null) StopCoroutine(coroutine3);
             coroutine3 = StartCoroutine(DesastreCuencaCorrutina());
         }
+
         if (puntoEncuentroActivo)
         {
             puntoEncuentroActivo = false;
         }
     }
 
+    private IEnumerator MomentoUnoCuenca()
+    {
+        rioCuenca.SubirDisplace();
+
+        yield return new WaitForSeconds(5f);
+
+        pulsosInternos[0].gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        pulsosInternos[0].IniciarAlerta();
+        momentoUnoCuencaTerminado = true;
+    }
+
     private IEnumerator DesastreCuencaCorrutina()
     {
         SimpleAudioManager.singleton.PlaySound(3);
-        // Aumentar Particulas lluvia
+
+        yield return new WaitForSeconds(1f);
+
+        for (int i = 0; i < rocas.Length; i++)
+        {
+            rocas[i].IniciarRecorrido();
+        }
+
+        yield return new WaitForSeconds(0.2f);
 
         for (int i = 0; i < temblorCasas.Length; i++)
         {
@@ -429,21 +600,62 @@ public class ManagerControlador : MonoBehaviour
         {
             npcAhogados[i].isKinematic = false;
         }
+
+
+        pulsosInternos[0].gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        pulsosInternos[0].IniciarAlerta();
+        momentoDosCuencaTerminado = true;
     }
 
     public void DesastreCasas()
+    {   
+        if (coroutine3 != null) StopCoroutine(coroutine3);
+        coroutine3 = StartCoroutine(IniciadorCasas());
+    }
+
+    private IEnumerator IniciadorCasas()
     {
+        yield return new WaitForSeconds(1f);
+
+        if (momentoUnoCasasActivo)
+        {
+            momentoUnoCasasActivo = false;
+            // Empezamos el evento
+            if (coroutine3 != null) StopCoroutine(coroutine3);
+            coroutine3 = StartCoroutine(MomentoUnoCasas());
+        }
+
         if (desastreCasasActivo)
         {
             desastreCasasActivo = false;
             // Empezamos el evento
             if (coroutine4 != null) StopCoroutine(coroutine4);
             coroutine4 = StartCoroutine(DesastreCasasCorrutina());
-        }        
+        }
+    }
+
+    private IEnumerator MomentoUnoCasas()
+    {
+        movimientoSuavizadoCasas.IniciarDesplazamiento();
+        camaraAlerta.IniciarAlerta();
+        rioCasas.SubirGain();
+        yield return new WaitForSeconds(5f);
+
+        pulsosInternos[1].gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        pulsosInternos[1].IniciarAlerta();
+        momentoUnoCasasTerminado = true;
     }
 
     private IEnumerator DesastreCasasCorrutina()
     {
+        movimientoSuavizadoCasas.CambiarObjetivoSecundario();
+
         for (int i = 0; i < temblorTerrenoCasas.Length; i++)
         {
             temblorTerrenoCasas[i].Vibrar();
@@ -454,31 +666,13 @@ public class ManagerControlador : MonoBehaviour
             npcsCasas[i].CorrerPorSuVida();
         }
 
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(7f);
 
-        //SimpleAudioManager.singleton.DesactivarAlarma();
-    }
+        pulsosInternos[1].gameObject.SetActive(true);
 
-    public void AumentarRioCuenca()
-    {   
-        //rioCuenca.SubirDisplace();
-    }
+        yield return new WaitForSeconds(0.5f);
 
-    public void AumentarRioCasas()
-    {
-        camaraAlerta.IniciarAlerta();
-        //rioCasas.SubirDisplace();
-    }
-
-    public void AumentarMasRioCuenca()
-    {
-        //rioCuenca.tope = 0.073f;
-        //rioCuenca.SubirDisplace();
-    }
-
-    public void AumentarMasRioCasas()
-    {
-       // rioCasas.tope = 0.073f;
-        //rioCasas.SubirDisplace();
+        pulsosInternos[1].IniciarAlerta();
+        momentoDosCasasTerminado = true;
     }
 }
