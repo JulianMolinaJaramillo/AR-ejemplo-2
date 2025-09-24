@@ -33,4 +33,9 @@ public class CrecimientoNubes : MonoBehaviour
     {
         puedoEscalar = true;
     }
+
+    public void RestablecerCrecimiento()
+    {
+        escalaObjetivoX = escalaInicial.x;
+    }
 }

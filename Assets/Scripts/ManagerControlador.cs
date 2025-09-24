@@ -26,6 +26,7 @@ public class ManagerControlador : MonoBehaviour
     public TextoEscalonado txtPanelCuenca;
     public Temblor temblorTerrenoCuenca;
     public MovimientoNPC[] npcsCuenca;
+    public MovimientoNPC[] npcsCuencaFinales;
     public Rigidbody[] npcAhogados;
     public DerrumbeCasas[] temblorCasas;
     public GameObject[] casasDesarmadas;
@@ -50,12 +51,15 @@ public class ManagerControlador : MonoBehaviour
     public GameObject panelDespedida;
     public PulsoEscala[] pulsosInternos;
     public TextoEscalonado canvasInformativo;
+    public TextoEscalonado canvasInformativoCuencaInterno;
+    public TextoEscalonado canvasInformativoCasasInterno;
 
     private bool lluviaActiva;
     private Coroutine coroutine;
     private Coroutine coroutine2;
     private Coroutine coroutine3;
     private Coroutine coroutine4;
+    private Coroutine coroutine5;
     //
     private bool iniciarPDF;
     private bool desastreCuencaActivo;
@@ -64,6 +68,8 @@ public class ManagerControlador : MonoBehaviour
     public bool desastreInicialActivo;
     [HideInInspector]
     public bool desastreSecundarioActivo;
+    [HideInInspector]
+    public bool puntoEncuentroActivo;
 
     public static ManagerControlador singleton;
     private bool activacion;
@@ -224,6 +230,10 @@ public class ManagerControlador : MonoBehaviour
         ActivarPanelCuenca();
         txtPanelCuenca.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
         txtPanelCuenca.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
+
+        canvasInformativoCuencaInterno.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
+        canvasInformativoCuencaInterno.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
+
         pulsosInternos[0].IniciarAlerta();
         movimientoSuavizadoCuenca.IniciarDesplazamiento();
         rio.SubirDisplace();
@@ -234,6 +244,11 @@ public class ManagerControlador : MonoBehaviour
         ActivarPanelCasas();  
         txtPanelCasas.textoAlmacenado = "A la zona residencial empiezan a llegar las nubes cargadas de lluvia; crece peligrosamente el nivel del agua.";
         txtPanelCasas.MostrarTexto("A la zona residencial empiezan a llegar las nubes cargadas de lluvia; crece peligrosamente el nivel del agua.");
+
+        canvasInformativoCasasInterno.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
+        canvasInformativoCasasInterno.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
+
+
         pulsosInternos[1].IniciarAlerta();
         movimientoSuavizadoCasas.IniciarDesplazamiento();
         camaraAlerta.IniciarAlerta();
@@ -308,6 +323,58 @@ public class ManagerControlador : MonoBehaviour
 
     }
 
+    [ContextMenu("Iniciar 3")]
+    public void EmpezarEventoPuntoEncuentro()
+    {
+        // Empezamos el evento
+        if (coroutine5 != null) StopCoroutine(coroutine5);
+        coroutine5 = StartCoroutine(PuntoEncuentro());
+    }
+
+    private IEnumerator PuntoEncuentro()
+    {
+        canvasInformativo.textoAlmacenado = "4. Reunión punto de encuentro.";
+        canvasInformativo.MostrarTexto("4. Reunión punto de encuentro.");
+        
+
+        yield return new WaitForSeconds(1f);
+
+        for (int i = 0; i < npcsCuenca.Length; i++)
+        {
+            npcsCuenca[i].gameObject.SetActive(false);
+        }
+
+        for (int i = 0; i < npcsCuencaFinales.Length; i++)
+        {
+            npcsCuencaFinales[i].gameObject.SetActive(true);
+        }
+
+        DesactivarPanelCasas();
+        DesactivarPanelCuenca();
+
+        ActivarPanelCuenca();
+        txtPanelCuenca.textoAlmacenado = "La comunidad se reune en el punto de encuentro.";
+        txtPanelCuenca.MostrarTexto("La comunidad se reune en el punto de encuentro.");
+        puntoEncuentroActivo = true;
+
+        //
+        yield return new WaitForSeconds(5f);
+
+        var main = particulas.main;  // Módulo Main
+        main.maxParticles = 500;
+
+        var emission = particulas.emission;  // Módulo Emission
+        emission.rateOverTime = 100;
+
+        crecimientoNubes.RestablecerCrecimiento();
+
+        yield return new WaitForSeconds(5f);
+
+        particulas.Stop();
+        lluviaActiva = false;
+
+    }
+
     public void DesastreCuenca()
     {
         if (desastreCuencaActivo)
@@ -316,7 +383,11 @@ public class ManagerControlador : MonoBehaviour
             // Empezamos el evento
             if (coroutine3 != null) StopCoroutine(coroutine3);
             coroutine3 = StartCoroutine(DesastreCuencaCorrutina());
-        }         
+        }
+        if (puntoEncuentroActivo)
+        {
+            puntoEncuentroActivo = false;
+        }
     }
 
     private IEnumerator DesastreCuencaCorrutina()

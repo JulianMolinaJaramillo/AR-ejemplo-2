@@ -9,6 +9,7 @@ public class MovimientoNPC : MonoBehaviour
     public Transform[] puntos;           // Puntos de movimiento (en local)
     public float velocidad = 0.1f;         // Velocidad de movimiento
     public float tiempoEspera = 2f;      // Tiempo de espera en cada punto
+    public bool npcFinal;
     
     //Configuraciones Privadas
     private Transform destinoActual;
@@ -51,14 +52,29 @@ public class MovimientoNPC : MonoBehaviour
         {
             animator.SetBool("Idle", false);
             animator.SetBool("Walk", true);
+            animator.SetBool("Run", false);
         }
-        
-        // Revisar si ya llegó (exacto)
-        if (transform.localPosition == destinoActual.localPosition)
+
+        if (npcFinal)
         {
-            if (coroutine != null) StopCoroutine(coroutine);
-            coroutine = StartCoroutine(EsperarYContinuar());
+            // Revisar si ya llegó (exacto)
+            if (transform.localPosition == destinoActual.localPosition)
+            {
+                destinoActual = null;
+                animator.SetBool("Idle", true);
+                animator.SetBool("Walk", false);
+                animator.SetBool("Run", false);     
+            }
         }
+        else
+        {
+            // Revisar si ya llegó (exacto)
+            if (transform.localPosition == destinoActual.localPosition)
+            {
+                if (coroutine != null) StopCoroutine(coroutine);
+                coroutine = StartCoroutine(EsperarYContinuar());
+            }
+        }      
     }
 
     [ContextMenu("correr")]
@@ -83,6 +99,7 @@ public class MovimientoNPC : MonoBehaviour
         {
             animator.SetBool("Walk", false);
             animator.SetBool("Idle", true);
+            animator.SetBool("Run", false);
         }
         
         yield return new WaitForSeconds(tiempoEspera);

@@ -92,7 +92,7 @@ public class Enfocar : MonoBehaviour
                     ManagerControlador.singleton.AumentarRioCuenca();
                 }
 
-                if (ManagerControlador.singleton.desastreSecundarioActivo)
+                if (ManagerControlador.singleton.desastreSecundarioActivo && !ManagerControlador.singleton.puntoEncuentroActivo)
                 {
                     SimpleAudioManager.singleton.Gritos();
                     ManagerControlador.singleton.AumentarMasRioCuenca();
