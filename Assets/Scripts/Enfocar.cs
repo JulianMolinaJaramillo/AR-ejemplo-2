@@ -23,6 +23,11 @@ public class Enfocar : MonoBehaviour
                 {
                     SimpleAudioManager.singleton.Gritos();
                 }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    SimpleAudioManager.singleton.Hablando();
+                }
             }
             else if (btnCasas)
             {
@@ -63,6 +68,11 @@ public class Enfocar : MonoBehaviour
                 if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
                 {
                     ManagerControlador.singleton.NormalizarCuenca();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    SimpleAudioManager.singleton.DesactivarHablando();
                 }
             }
             else if (btnCasasInterno)
@@ -111,6 +121,11 @@ public class Enfocar : MonoBehaviour
                 {
                     SimpleAudioManager.singleton.Gritos();
                 }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    SimpleAudioManager.singleton.Hablando();
+                }
             }
             else if (btnCasas)
             {
@@ -153,6 +168,10 @@ public class Enfocar : MonoBehaviour
                     ManagerControlador.singleton.NormalizarCuenca();
                 }
 
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    SimpleAudioManager.singleton.DesactivarHablando();
+                }
             }
             else if (btnCasasInterno)
             {

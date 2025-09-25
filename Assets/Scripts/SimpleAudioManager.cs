@@ -8,9 +8,11 @@ public class SimpleAudioManager : MonoBehaviour
     public AudioClip[] clips; // arrastras tus audios aquí
 
     public AudioSource audioSource;
+    public AudioSource audioSourceSecundario;
     public AudioSource audioSourceFondo;
     public AudioSource audioSourceGritos;
     public AudioSource audioSourceAlarma;
+    public AudioSource audioSourcePersonas;
 
     private void Awake()
     {
@@ -37,6 +39,18 @@ public class SimpleAudioManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Reproduce un clip por índice (0,1,2,3)
+    /// </summary>
+    public void PlaySound2(int index)
+    {
+        if (clips == null || clips.Length == 0 || index < 0 || index >= clips.Length)
+            return;
+
+        audioSourceSecundario.clip = clips[index];
+        audioSourceSecundario.Play();
+    }
+
+    /// <summary>
     /// Detiene el audio actual
     /// </summary>
     public void StopSound()
@@ -54,8 +68,9 @@ public class SimpleAudioManager : MonoBehaviour
     public void RestaurarAudioFondo()
     {
         audioSourceFondo.Play();
-        audioSourceGritos.volume = 1f;
-        audioSourceAlarma.volume = 1f;
+        audioSourceGritos.volume = 0.5f;
+        audioSourceAlarma.volume = 0.4f;
+        audioSourcePersonas.volume = 0.5f;
     }
 
     public void Alarma()
@@ -76,5 +91,16 @@ public class SimpleAudioManager : MonoBehaviour
     public void DesactivarGritos()
     {
         audioSourceGritos.Stop();
+    }
+
+    [ContextMenu("gritar")]
+    public void Hablando()
+    {
+        audioSourcePersonas.Play();
+    }
+    [ContextMenu("callar")]
+    public void DesactivarHablando()
+    {
+        audioSourcePersonas.Stop();
     }
 }
