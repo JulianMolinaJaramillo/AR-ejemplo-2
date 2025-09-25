@@ -48,6 +48,22 @@ public class Enfocar : MonoBehaviour
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
                 }
+
+                if (ManagerControlador.singleton.momentoReunionTerminado)
+                {
+                    ManagerControlador.singleton.momentoReunionTerminado = false;
+                    ManagerControlador.singleton.botonReunion.SetActive(true);
+                }
+
+                if (ManagerControlador.singleton.momentoDosCasasTerminado && ManagerControlador.singleton.momentoDosCuencaTerminado)
+                {
+                    ManagerControlador.singleton.AntesDeNormalizarCuenca();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    ManagerControlador.singleton.NormalizarCuenca();
+                }
             }
             else if (btnCasasInterno)
             {
@@ -57,6 +73,22 @@ public class Enfocar : MonoBehaviour
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
                     SimpleAudioManager.singleton.DesactivarAlarma();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminado)
+                {
+                    ManagerControlador.singleton.momentoReunionTerminado = false;
+                    ManagerControlador.singleton.botonReunion.SetActive(true);
+                }
+
+                if (ManagerControlador.singleton.momentoDosCasasTerminado && ManagerControlador.singleton.momentoDosCuencaTerminado)
+                {
+                    ManagerControlador.singleton.AntesDeNormalizarCuenca();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    ManagerControlador.singleton.NormalizarCuenca();
                 }
             }
 
@@ -74,7 +106,7 @@ public class Enfocar : MonoBehaviour
             {
                 ManagerControlador.singleton.DesastreCuenca();
                 ManagerControlador.singleton.ActivarImagenCuenca();
-                
+
                 if (ManagerControlador.singleton.desastreSecundarioActivo && !ManagerControlador.singleton.puntoEncuentroActivo)
                 {
                     SimpleAudioManager.singleton.Gritos();
@@ -104,6 +136,23 @@ public class Enfocar : MonoBehaviour
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
                 }
+
+                if (ManagerControlador.singleton.momentoReunionTerminado)
+                {
+                    ManagerControlador.singleton.momentoReunionTerminado = false;
+                    ManagerControlador.singleton.botonReunion.SetActive(true);
+                }
+
+                if (ManagerControlador.singleton.momentoDosCasasTerminado && ManagerControlador.singleton.momentoDosCuencaTerminado)
+                {
+                    ManagerControlador.singleton.AntesDeNormalizarCuenca();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    ManagerControlador.singleton.NormalizarCuenca();
+                }
+
             }
             else if (btnCasasInterno)
             {
@@ -113,6 +162,22 @@ public class Enfocar : MonoBehaviour
                 {
                     SimpleAudioManager.singleton.DesactivarGritos();
                     SimpleAudioManager.singleton.DesactivarAlarma();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminado)
+                {
+                    ManagerControlador.singleton.momentoReunionTerminado = false;
+                    ManagerControlador.singleton.botonReunion.SetActive(true);
+                }
+
+                if (ManagerControlador.singleton.momentoDosCasasTerminado && ManagerControlador.singleton.momentoDosCuencaTerminado)
+                {
+                    ManagerControlador.singleton.AntesDeNormalizarCuenca();
+                }
+
+                if (ManagerControlador.singleton.momentoReunionTerminadoCuenca)
+                {
+                    ManagerControlador.singleton.NormalizarCuenca();
                 }
             }
 

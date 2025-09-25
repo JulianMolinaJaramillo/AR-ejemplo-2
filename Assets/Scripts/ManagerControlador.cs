@@ -8,7 +8,7 @@ public class ManagerControlador : MonoBehaviour
     public GameObject padre;
     public GameObject panelImgTextoInicial;
     public TextMeshProUGUI txtTituloInicial;
-
+    public GameObject iguana;
     [Header("Configuraciónes evento lluvia")]
     public NivelAgua rio; // arrastras el objeto con el material al inspector
     
@@ -31,6 +31,10 @@ public class ManagerControlador : MonoBehaviour
     public GameObject[] casasDesarmadas;
     public NivelAgua rioCuenca; // arrastras el objeto con el material al inspector
     public Roca[] rocas;
+    public GameObject panelPuntoReunion;
+    public PulsoEscala botonPuntoReunion;
+    public GameObject terrenoCuenca;
+    public GameObject particulasDerrumbe;
 
     [Header("Configuraciónes Casas")]
     public GameObject casas;
@@ -90,6 +94,10 @@ public class ManagerControlador : MonoBehaviour
     public bool momentoDosCuencaTerminado;
     [HideInInspector]
     public bool momentoDosCasasTerminado;
+    [HideInInspector]
+    public bool momentoReunionTerminado;
+    
+    public bool momentoReunionTerminadoCuenca;
 
     private bool activacion;
 
@@ -138,9 +146,16 @@ public class ManagerControlador : MonoBehaviour
 
         if (momentoDosCasasTerminado && momentoDosCuencaTerminado)
         {
-            botonReunion.SetActive(true);
-            momentoDosCasasTerminado = false;
-            momentoDosCuencaTerminado = false;
+            if (iguana.activeInHierarchy)
+            {
+                botonReunion.SetActive(true);
+                pulsoEscalaCasas.gameObject.SetActive(false);
+                pulsoEscalaCuenca.gameObject.SetActive(false);
+            }
+            else
+            {
+                momentoReunionTerminado = true;
+            }
         }
     }
 
@@ -465,9 +480,11 @@ public class ManagerControlador : MonoBehaviour
 
     private IEnumerator PuntoEncuentro()
     {
+        pulsoEscalaCasas.gameObject.SetActive(false);
         canvasInformativo.textoAlmacenado = "4. Reunión punto de encuentro.";
         canvasInformativo.MostrarTexto("4. Reunión punto de encuentro.");
-        
+        pulsoEscalaCuenca.gameObject.SetActive(true);
+        pulsosInternos[0].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1f);
 
@@ -483,14 +500,28 @@ public class ManagerControlador : MonoBehaviour
 
         DesactivarPanelCasas();
         DesactivarPanelCuenca();
-
+        
         ActivarPanelCuenca();
-        txtPanelCuenca.textoAlmacenado = "La comunidad se reune en el punto de encuentro.";
-        txtPanelCuenca.MostrarTexto("La comunidad se reune en el punto de encuentro.");
-        puntoEncuentroActivo = true;
+        txtPanelCuenca.textoAlmacenado = "El flujo de personas converge hacia un punto de encuentro seguro en una zona alta, donde se organizan bajo la guía de líderes comunitarios.";
+        txtPanelCuenca.MostrarTexto("El flujo de personas converge hacia un punto de encuentro seguro en una zona alta, donde se organizan bajo la guía de líderes comunitarios.");
 
-        //
-        yield return new WaitForSeconds(5f);
+        puntoEncuentroActivo = true;      
+    }
+
+    private IEnumerator IniciadorPuntoEncuentroEventoCuenca()
+    {
+        panelPuntoReunion.SetActive(true);     
+        pulsosInternos[0].gameObject.SetActive(false);
+        canvasInformativoCuencaInterno.textoAlmacenado = "Gracias a los sistemas de alerta temprana integrados al SIRMED se logró una exitosa evacuación por las rutas integradas.";
+        canvasInformativoCuencaInterno.MostrarTexto("Gracias a los sistemas de alerta temprana integrados al SIRMED se logró una exitosa evacuación por las rutas integradas.");
+
+        yield return new WaitForSeconds(0.5f);
+        botonPuntoReunion.IniciarAlerta();
+
+        yield return new WaitForSeconds(7f);
+
+        canvasInformativoCuencaInterno.textoAlmacenado = "Lentamente comienzan a disminuir las fuertes lluvias, lo que ayuda también a disminuir la presion de la corriente.";
+        canvasInformativoCuencaInterno.MostrarTexto("Lentamente comienzan a disminuir las fuertes lluvias, lo que ayuda también a disminuir la presion de la corriente.");
 
         var main = particulas.main;  // Módulo Main
         main.maxParticles = 500;
@@ -498,13 +529,56 @@ public class ManagerControlador : MonoBehaviour
         var emission = particulas.emission;  // Módulo Emission
         emission.rateOverTime = 100;
 
+        crecimientoNubes.velocidad = 0.3f;
         crecimientoNubes.RestablecerCrecimiento();
 
-        yield return new WaitForSeconds(5f);
+        rioCuenca.ResetDisplace();
+        yield return new WaitForSeconds(7f);
+
+        canvasInformativoCuencaInterno.textoAlmacenado = "La lluvia se detiene por completo, sale el sol y el nivel de la corriente vuelve a su normalidad, la comunidad procede con la evaluación de daños.";
+        canvasInformativoCuencaInterno.MostrarTexto("La lluvia se detiene por completo, sale el sol y el nivel de la corriente vuelve a su normalidad, la comunidad procede con la evaluación de daños.");
+
+        // Desactivamos sonido lluvia y restauramos fondo
+        if (SimpleAudioManager.singleton != null)
+        {
+            SimpleAudioManager.singleton.DetenerAudioFondo();
+            SimpleAudioManager.singleton.audioSourceFondo.clip = SimpleAudioManager.singleton.clips[7];
+            SimpleAudioManager.singleton.RestaurarAudioFondo();
+        }
 
         particulas.Stop();
+        particulasNubes.Stop();
         lluviaActiva = false;
+        particulas.gameObject.SetActive(false);
+        particulasNubes.gameObject.SetActive(false);
 
+        pulsosInternos[0].gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        pulsosInternos[0].RestablecerEscalaColor();
+        momentoReunionTerminadoCuenca = true;
+    }
+
+    private IEnumerator IniciadorPuntoEncuentroEventoCasas()
+    {
+        rioCasas.ResetGain();
+
+        for (int i = 0; i < npcsCasas.Length; i++)
+        {
+            npcsCasas[i].gameObject.SetActive(false);
+        }
+        yield return new WaitForSeconds(1f);
+
+        canvasInformativoCasasInterno.textoAlmacenado = "La preparación previa y la acción coordinada permiten salvar vidas antes de la materialización completa del evento.";
+        canvasInformativoCasasInterno.MostrarTexto("La preparación previa y la acción coordinada permiten salvar vidas antes de la materialización completa del evento.");
+
+        pulsosInternos[1].gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        pulsosInternos[1].RestablecerEscalaColor();
+        
     }
 
     public void DesastreCuenca()
@@ -536,13 +610,16 @@ public class ManagerControlador : MonoBehaviour
         if (puntoEncuentroActivo)
         {
             puntoEncuentroActivo = false;
+            // Empezamos el evento
+            if (coroutine3 != null) StopCoroutine(coroutine3);
+            coroutine3 = StartCoroutine(IniciadorPuntoEncuentroEventoCuenca());
         }
     }
 
     private IEnumerator MomentoUnoCuenca()
     {
         rioCuenca.SubirDisplace();
-
+        
         yield return new WaitForSeconds(5f);
 
         pulsosInternos[0].gameObject.SetActive(true);
@@ -556,11 +633,17 @@ public class ManagerControlador : MonoBehaviour
     private IEnumerator DesastreCuencaCorrutina()
     {
         SimpleAudioManager.singleton.PlaySound(3);
+        particulasDerrumbe.SetActive(true);
+        terrenoCuenca.SetActive(false);
 
+        rioCuenca.tope = 0.077f;
+        rioCuenca.SubirDisplace();
+        
         yield return new WaitForSeconds(1f);
 
         for (int i = 0; i < rocas.Length; i++)
         {
+            yield return new WaitForSeconds(0.05f);
             rocas[i].IniciarRecorrido();
         }
 
@@ -598,7 +681,7 @@ public class ManagerControlador : MonoBehaviour
 
         for (int i = 0; i < npcAhogados.Length; i++)
         {
-            npcAhogados[i].isKinematic = false;
+            npcAhogados[i].gameObject.SetActive(false);
         }
 
 
@@ -611,7 +694,12 @@ public class ManagerControlador : MonoBehaviour
     }
 
     public void DesastreCasas()
-    {   
+    {
+        if (momentoReunionTerminadoCuenca)
+        {
+            movimientoSuavizadoCasas.ReiniciarPosicion();
+        }
+
         if (coroutine3 != null) StopCoroutine(coroutine3);
         coroutine3 = StartCoroutine(IniciadorCasas());
     }
@@ -635,6 +723,13 @@ public class ManagerControlador : MonoBehaviour
             if (coroutine4 != null) StopCoroutine(coroutine4);
             coroutine4 = StartCoroutine(DesastreCasasCorrutina());
         }
+     
+        if (momentoReunionTerminadoCuenca)
+        {
+            // Empezamos el evento
+            if (coroutine3 != null) StopCoroutine(coroutine3);
+            coroutine3 = StartCoroutine(IniciadorPuntoEncuentroEventoCasas());
+        }
     }
 
     private IEnumerator MomentoUnoCasas()
@@ -654,6 +749,7 @@ public class ManagerControlador : MonoBehaviour
 
     private IEnumerator DesastreCasasCorrutina()
     {
+        movimientoSuavizadoCasas.velocidad = 0.8f; ;
         movimientoSuavizadoCasas.CambiarObjetivoSecundario();
 
         for (int i = 0; i < temblorTerrenoCasas.Length; i++)
@@ -674,5 +770,78 @@ public class ManagerControlador : MonoBehaviour
 
         pulsosInternos[1].IniciarAlerta();
         momentoDosCasasTerminado = true;
+    }
+
+    public void AntesDeNormalizarCuenca()
+    {
+        // Empezamos el evento
+        if (coroutine3 != null) StopCoroutine(coroutine3);
+        coroutine3 = StartCoroutine(AntesDeNormalizarCuencaCorrutina());
+    }
+
+    private IEnumerator AntesDeNormalizarCuencaCorrutina()
+    {
+        yield return new WaitForSeconds(1f);
+
+        botonReunion.SetActive(true);
+        pulsoEscalaCasas.gameObject.SetActive(false);
+        pulsoEscalaCuenca.gameObject.SetActive(false);
+        momentoReunionTerminado = true;
+
+        momentoDosCasasTerminado = false;
+        momentoDosCuencaTerminado = false;
+    }
+
+    public void NormalizarCuenca()
+    {
+        // Empezamos el evento
+        if (coroutine3 != null) StopCoroutine(coroutine3);
+        coroutine3 = StartCoroutine(NormalizarCuencaCorrutina());
+    }
+
+    private IEnumerator NormalizarCuencaCorrutina()
+    {
+        botonReunion.SetActive(false);
+        yield return new WaitForSeconds(1f);
+
+        for (int i = 0; i < vehiculos.Length; i++)
+        {
+            vehiculos[i].ResstablecerSpawn();
+        }
+
+        rio.rioActivo = false;
+        rio.ResetDisplace();
+
+        canvasInformativo.textoAlmacenado = "5. Cuenca despues del desastre.";
+        canvasInformativo.MostrarTexto("5. Cuenca despues del desastre.");
+
+        ActivarPanelCuenca();
+        txtPanelCuenca.textoAlmacenado = "Estado normal de la cuenca, luego del desastre natural y en proceso de evaluación de daños.";
+        txtPanelCuenca.MostrarTexto("Estado normal de la cuenca, luego del desastre natural y en proceso de evaluación de daños.");
+
+        canvasInformativoCuencaInterno.textoAlmacenado = "Estado normal de la cuenca, luego del desastre natural y en proceso de evaluación de daños.";
+        canvasInformativoCuencaInterno.MostrarTexto("Estado normal de la cuenca, luego del desastre natural y en proceso de evaluación de daños.");
+
+
+        ActivarPanelCasas();
+        txtPanelCasas.textoAlmacenado = "Zona de viviendas en su estado normal, luego del desastre natural y en proceso de evaluación de daños.";
+        txtPanelCasas.MostrarTexto("Zona de viviendas en su estado normal, luego del desastre natural y en proceso de evaluación de daños.");
+
+        canvasInformativoCasasInterno.textoAlmacenado = "Zona de viviendas en su estado normal, luego del desastre natural y en proceso de evaluación de daños.";
+        canvasInformativoCasasInterno.MostrarTexto("Zona de viviendas en su estado normal, luego del desastre natural y en proceso de evaluación de daños.");
+
+        desastreSecundarioActivo = false;
+        pulsoEscalaCuenca.gameObject.SetActive(true);
+        pulsoEscalaCasas.gameObject.SetActive(true);
+        pulsosInternos[0].gameObject.SetActive(true);
+        pulsosInternos[1].gameObject.SetActive(true);
+
+        pulsoEscalaCuenca.RestablecerEscalaColor();
+        pulsoEscalaCasas.RestablecerEscalaColor();
+        pulsosInternos[0].RestablecerEscalaColor();
+        pulsosInternos[1].RestablecerEscalaColor();
+
+        momentoDosCasasTerminado = false;
+        momentoDosCuencaTerminado = false;
     }
 }

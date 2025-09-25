@@ -34,6 +34,7 @@ public class MovimientoSuavizado : MonoBehaviour
     [ContextMenu("reiniciar")]
     public void ReiniciarPosicion()
     {
+        iniciar = false;
         transform.localPosition = posicionInicial;
     }
 

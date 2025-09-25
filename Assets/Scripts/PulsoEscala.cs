@@ -16,11 +16,13 @@ public class PulsoEscala : MonoBehaviour
 
     public Material material; // Referencia al material
     private bool escalar;
+    public bool escalarAlIniciar;
     void Start()
     {
         transform.localScale = escalaInicial;
         material.color = colorInicial;
         escalar = true;
+
     }
 
     void Update()
@@ -64,5 +66,10 @@ public class PulsoEscala : MonoBehaviour
     public void IniciarAlerta()
     {
         escalar = false;
+    }
+
+    private void OnEnable()
+    {
+        if (escalarAlIniciar) escalar = false;
     }
 }

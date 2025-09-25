@@ -12,12 +12,17 @@ public class NivelAgua : MonoBehaviour
     public float topeGain = 0.5f;       // Valor máximo permitido
     public bool rioActivo;
 
+    [Header("Valores de reinicio")]
+    public float resetDisplace = 0f; // Valor objetivo al reiniciar _DisplaceAmp
+    public float resetGain = 0f;     // Valor objetivo al reiniciar _NoiseGain
+
     private Material mat;
 
     void Start()
     {
         mat = objetoRenderer.material;
         mat.SetFloat("_DisplaceAmp", 0f);
+        mat.SetFloat("_NoiseGain", resetGain);
     }
 
     // Método público para iniciar el aumento escalado
@@ -60,11 +65,52 @@ public class NivelAgua : MonoBehaviour
         }
     }
 
+    // ===== RESTABLECER DISPLACE =====
+    [ContextMenu("Reset Displace")]
+    public void ResetDisplace()
+    {
+        StopAllCoroutines();
+        StartCoroutine(RestaurarDisplace());
+    }
+
+    private IEnumerator RestaurarDisplace()
+    {
+        float valorActual = mat.GetFloat("_DisplaceAmp");
+
+        while (valorActual > resetDisplace)
+        {
+            valorActual -= Time.deltaTime * velocidad;
+            mat.SetFloat("_DisplaceAmp", Mathf.Max(valorActual, resetDisplace));
+            yield return null;
+        }
+    }
+
+    // ===== RESTABLECER GAIN =====
+    [ContextMenu("Reset Gain")]
+    public void ResetGain()
+    {
+        StopAllCoroutines();
+        StartCoroutine(RestaurarGain());
+    }
+
+    private IEnumerator RestaurarGain()
+    {
+        float valorActual = mat.GetFloat("_NoiseGain");
+
+        while (valorActual > resetGain)
+        {
+            valorActual -= Time.deltaTime * velocidad;
+            mat.SetFloat("_NoiseGain", Mathf.Max(valorActual, resetGain));
+            yield return null;
+        }
+    }
+
     private void OnEnable()
     {
+        
         if (rioActivo)
         {
-            SubirDisplace();
+            SubirDisplace();       
         }
     }
 }

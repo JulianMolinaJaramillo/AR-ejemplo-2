@@ -62,6 +62,12 @@ public class ManagerVehiculos : MonoBehaviour
         detener = true;
     }
 
+    [ContextMenu("detener")]
+    public void ResstablecerSpawn()
+    {
+        detener = false;
+    }
+
     private void OnEnable()
     {
         if (!detener)
