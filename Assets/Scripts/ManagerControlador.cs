@@ -128,6 +128,7 @@ public class ManagerControlador : MonoBehaviour
     {
         casas.SetActive(true);
         cuenca.SetActive(true);
+        SimpleAudioManager.singleton.RestaurarAudioFondo();
     }
 
     private void Update()
