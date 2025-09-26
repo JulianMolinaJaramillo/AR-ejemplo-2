@@ -193,7 +193,7 @@ public class ManagerControlador : MonoBehaviour
                 imagenCasas.SetActive(true);
             }
 
-
+            SimpleAudioManager.singleton.RestaurarAudioFondo();
             imgLLuvia.SetActive(true);
             padre.SetActive(true);
             panelImgTextoInicial.SetActive(false);
@@ -238,6 +238,7 @@ public class ManagerControlador : MonoBehaviour
                 imagenCasas.SetActive(false);
             }
 
+            SimpleAudioManager.singleton.DetenerAudioFondo();
             imgLLuvia.SetActive(false);
             padre.SetActive(false);
             panelImgTextoInicial.SetActive(true);
