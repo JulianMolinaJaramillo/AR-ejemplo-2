@@ -61,6 +61,7 @@ public class ManagerControlador : MonoBehaviour
     public GameObject imagenIguana;
     public GameObject imagenCuenca;
     public GameObject imagenCasas;
+    public GameObject imagenes;
 
     private bool lluviaActiva;
     private Coroutine coroutine;
@@ -180,6 +181,8 @@ public class ManagerControlador : MonoBehaviour
                 particulasNubes.gameObject.SetActive(true);
             }
 
+            imagenes.SetActive(true);
+
             if (imagenIguanaActiva)
             {
                 imagenIguana.SetActive(true);
@@ -224,6 +227,8 @@ public class ManagerControlador : MonoBehaviour
                 particulas.gameObject.SetActive(false);
                 particulasNubes.gameObject.SetActive(false);
             }
+
+            imagenes.SetActive(false);
 
             if (imagenIguanaActiva)
             {
