@@ -6,6 +6,7 @@ public class ManagerControlador : MonoBehaviour
 {
     [Header("Configuraciónes para Zappar Visible e invisible")]
     public GameObject padre;
+    public GameObject imagenPrevia;
     public GameObject panelImgTextoInicial;
     public TextMeshProUGUI txtTituloInicial;
     public GameObject iguana;
@@ -181,6 +182,7 @@ public class ManagerControlador : MonoBehaviour
                 particulasNubes.gameObject.SetActive(true);
             }
 
+            imagenPrevia.SetActive(true);
             imagenes.SetActive(true);
 
             if (imagenIguanaActiva)
@@ -228,6 +230,7 @@ public class ManagerControlador : MonoBehaviour
                 particulasNubes.gameObject.SetActive(false);
             }
 
+            imagenPrevia.SetActive(false);
             imagenes.SetActive(false);
 
             if (imagenIguanaActiva)
@@ -328,8 +331,8 @@ public class ManagerControlador : MonoBehaviour
             pulsosInternos[i].gameObject.SetActive(false);
         }
 
-        canvasInformativo.textoAlmacenado = "2. Precipitación de lluvia.";
-        canvasInformativo.MostrarTexto("2. Precipitación de lluvia.");
+        canvasInformativo.textoAlmacenado = "2. Precipitación.";
+        canvasInformativo.MostrarTexto("2. Precipitación.");
 
         desastreInicialActivo = true;
         // Generamos las nubes
