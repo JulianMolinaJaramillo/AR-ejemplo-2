@@ -371,11 +371,11 @@ public class ManagerControlador : MonoBehaviour
 
         pulsoEscalaCuenca.IniciarAlerta();
         ActivarPanelCuenca();
-        txtPanelCuenca.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.";
-        txtPanelCuenca.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el agua de la quebrada empieza a crecer.");
+        txtPanelCuenca.textoAlmacenado = "El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el nivel de la quebrada empieza a crecer.";
+        txtPanelCuenca.MostrarTexto("El cielo de la cuenca comienza a cubrirse de nubes y se inicia una llovizna; el nivel de la quebrada empieza a crecer.");
 
-        canvasInformativoCuencaInterno.textoAlmacenado = "El agua golpea las laderas con pendientes fuertes, lo que acelera los procesos de escorrentía superficial.";
-        canvasInformativoCuencaInterno.MostrarTexto("El agua golpea las laderas con pendientes fuertes, lo que acelera los procesos de escorrentía superficial.");
+        canvasInformativoCuencaInterno.textoAlmacenado = "El agua golpea las laderas con pendientes pronunciadas, lo que acelera los procesos de escorrentía superficial.";
+        canvasInformativoCuencaInterno.MostrarTexto("El agua golpea las laderas con pendientes pronunciadas, lo que acelera los procesos de escorrentía superficial.");
 
         yield return new WaitForSeconds(0.5f);
 
@@ -384,8 +384,8 @@ public class ManagerControlador : MonoBehaviour
         txtPanelCasas.textoAlmacenado = "A la zona residencial empiezan a llegar las nubes cargadas de lluvia; crece peligrosamente el nivel del agua.";
         txtPanelCasas.MostrarTexto("A la zona residencial empiezan a llegar las nubes cargadas de lluvia; crece peligrosamente el nivel del agua.");
 
-        canvasInformativoCasasInterno.textoAlmacenado = "los habitantes se percatan de que el nivel del caudal se incrementa y el sensor del nivel de agua se activa.";
-        canvasInformativoCasasInterno.MostrarTexto("los habitantes se percatan de que el nivel del caudal se incrementa y el sensor del nivel de agua se activa.");
+        canvasInformativoCasasInterno.textoAlmacenado = "los habitantes se percatan del incremento en el caudal, mientras el sensor de nivel registra un aumento significativo en sus datos.";
+        canvasInformativoCasasInterno.MostrarTexto("los habitantes se percatan del incremento en el caudal, mientras el sensor de nivel registra un aumento significativo en sus datos.");
 
 
         if (cuenca.activeInHierarchy)
@@ -446,8 +446,8 @@ public class ManagerControlador : MonoBehaviour
         txtPanelCuenca.textoAlmacenado = "Cunde el caos entre las personas, se presentan desprendimientos de tierra, las viviendas colapsan y la quebrada se desborda.";
         txtPanelCuenca.MostrarTexto("Cunde el caos entre las personas, se presentan desprendimientos de tierra, las viviendas colapsan y la quebrada se desborda.");
 
-        canvasInformativoCuencaInterno.textoAlmacenado = "El suelo se desprende en bloques, arrastrado por la corriente, generando un socavamiento progresivo, y se ve como la columna va quedando expuesta.";
-        canvasInformativoCuencaInterno.MostrarTexto("El suelo se desprende en bloques, arrastrado por la corriente, generando un socavamiento progresivo, y se ve como la columna va quedando expuesta.");
+        canvasInformativoCuencaInterno.textoAlmacenado = "El suelo se desprende progresivamente, arrastrado por la corriente, lo que genera erosión y socavamiento en las laderas.";
+        canvasInformativoCuencaInterno.MostrarTexto("El suelo se desprende progresivamente, arrastrado por la corriente, lo que genera erosión y socavamiento en las laderas.");
 
         if (rio.gameObject.activeInHierarchy)
         {
